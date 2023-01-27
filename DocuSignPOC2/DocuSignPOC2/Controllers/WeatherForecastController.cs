@@ -1,3 +1,4 @@
+using DocuSignPOC2.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DocuSignPOC2.Controllers
@@ -34,6 +35,12 @@ namespace DocuSignPOC2.Controllers
         public void WebHookPost(dynamic webHookObject)
         {
             
+        }
+
+        [HttpPost("SendEnvelope")]
+        public IActionResult SendEnvelope(AgentProducerEnvelope request)
+        {
+
         }
     }
 }

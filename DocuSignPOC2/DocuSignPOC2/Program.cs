@@ -1,12 +1,23 @@
+using DocuSignPOC2.Services.IDocuSignClient;
+using DocuSignPOC2.Services.IDocuSignEnvelope;
+using DocuSignPOC2.Services.IRequestItem;
+using DocuSignPOC2.Services.IESignAdmin;
+using DocuSignPOC2.Services.IUser;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<IeSignAdminService, ESignAdminService>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IRequestItemsService, RequestItemsService>();
+builder.Services.AddScoped<IDocuSignEnvelopeService, DocuSignEnvelopeService>();
+builder.Services.AddScoped<IDocuSignClientService, DocuSignClientService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

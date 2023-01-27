@@ -5,18 +5,6 @@ namespace DocuSignPOC2.Services.IUser
 {
     public interface IUserService
     {
-        public NewUserResponse CreateNewUser(
-            string accessToken,
-            string basePath,
-            Guid accountId,
-            Guid? organizationId,
-            string firstName,
-            string lastName,
-            string userName,
-            string email,
-            long permissionProfileId,
-            long groupId);
-
         public NewUsersSummary CreateNewUser(string accessToken,
             string basePath,
             string accountId,
@@ -40,7 +28,6 @@ namespace DocuSignPOC2.Services.IUser
             string lastName,
             string userName);
 
-        public Guid? GetOrganizationId(string adminApiBasePath, string accessToken);
-        public string BuildConsentURL();
+        public Guid? GetOrganizationId(string adminApiBasePath, string accessToken);       
     }
 }

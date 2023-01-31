@@ -1,6 +1,5 @@
-using DocuSignPOC2.Services.IDocuSignClient;
+
 using DocuSignPOC2.Services.IDocuSignEnvelope;
-using DocuSignPOC2.Services.IRequestItem;
 using DocuSignPOC2.Services.IESignAdmin;
 using DocuSignPOC2.Services.IUser;
 
@@ -15,9 +14,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IRequestItemsService, RequestItemsService>();
 builder.Services.AddScoped<IDocuSignEnvelopeService, DocuSignEnvelopeService>();
-builder.Services.AddScoped<IDocuSignClientService, DocuSignClientService>();
+builder.Services.AddScoped<IeSignAdminService, ESignAdminService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

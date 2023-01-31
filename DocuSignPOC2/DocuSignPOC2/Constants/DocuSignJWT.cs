@@ -12,5 +12,6 @@ namespace DocuSign.Constants
         public string AuthServer { get; set; }
         public string ImpersonatedUserID { get; set; }
         public string PrivateKeyFile { get; set; }
+        public string AdminApiEndpoint { get; set; }
     }
 }

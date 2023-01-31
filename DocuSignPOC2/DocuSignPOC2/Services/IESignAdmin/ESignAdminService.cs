@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 using DocuSign.eSign.Model;
 using static DocuSign.eSign.Client.Auth.OAuth.UserInfo;
+using DocuSign.eSign.Api;
 
 namespace DocuSignPOC2.Services.IESignAdmin
 {
@@ -19,7 +20,8 @@ namespace DocuSignPOC2.Services.IESignAdmin
         private readonly DocuSignClient _docuSignClient;
         private readonly DocuSign.eSign.Client.Auth.OAuth.UserInfo _userInfo;
         private readonly Account _account;
-        private readonly ApiClient _apiClient;
+        private readonly ApiClient _eSignApiClient;
+        private readonly DocuSign.Admin.Client.ApiClient _adminApiClient;
 
 
         public ESignAdminService(IMemoryCache cache, IConfiguration config)
@@ -29,18 +31,54 @@ namespace DocuSignPOC2.Services.IESignAdmin
             _docuSignJWT = _config.GetRequiredSection("DocuSignJWT").Get<DocuSignJWT>();
             _docuSignClient = new DocuSignClient();
             _docuSignClient.SetOAuthBasePath(_docuSignJWT.AuthServer);
+            _eSignApiClient = new ApiClient();
+            _adminApiClient = new DocuSign.Admin.Client.ApiClient();
             FetchAdminToken();
-            _apiClient = new ApiClient();
-            _apiClient.Configuration.DefaultHeader.Add("Authorization", "Bearer " + ESignAdminToken);
-            _apiClient.SetBasePath(ESignBaseUrl);
+            
 
-        }      
-
-        public ApiClient ApiClient
+        }
+        public DocuSign.Admin.Api.AccountsApi AdminAccountsApi
         {
-            get { return _apiClient; }
+            get { return new DocuSign.Admin.Api.AccountsApi(_adminApiClient); }
+        }
+    
+        public ApiClient ESignApiClient
+        {
+            get { return _eSignApiClient; }
         }
 
+        public DocuSign.Admin.Client.ApiClient AdminApiClient
+        {
+            get { return _adminApiClient; }
+        }
+
+
+        public GroupsApi GroupsApi
+        {
+            get { return new GroupsApi(_eSignApiClient); }
+        }
+        public EnvelopesApi EnvelopesApi
+        {
+            get { return new EnvelopesApi(_docuSignClient); }
+        }
+
+        public DocuSignClient DocuSignClient
+        {
+            get { return _docuSignClient; }
+        }
+
+        public DocuSign.Admin.Api.UsersApi AdminUsersApi
+        {
+            get { return new DocuSign.Admin.Api.UsersApi(_adminApiClient); }
+        }
+        public UsersApi UsersApi
+        {
+            get { return new UsersApi(_eSignApiClient); }
+        }
+        public AccountsApi AccountsApi
+        {
+            get { return new AccountsApi(_eSignApiClient); }
+        }
         public string ESignAdminOrganizationId
         {
             get => _cache.Get<string>("eSignAdminOrganizationId");
@@ -85,12 +123,7 @@ namespace DocuSignPOC2.Services.IESignAdmin
                 _cache.Set("ESignAdminToken", tokenmodel.Value, options);
 
                 token = tokenmodel.Value;
-
-                var userInfo = _docuSignClient.GetUserInfo(token);
-                var account = userInfo.Accounts.FirstOrDefault();
-                this.ESignAdminOrganizationId = account.Organization.OrganizationId;
-                this.ESignAdminAccountId = _account.AccountId;
-                this.ESignBaseUrl= account.BaseUri + "/restapi";
+                RefreshDocuSignClientsAndApiWithToken(token);
             }
 
             return token;
@@ -100,14 +133,13 @@ namespace DocuSignPOC2.Services.IESignAdmin
         {
             try
             {
-                var accessToken = AuthenticateWithJWT("ESignature", _docuSignJWT.ClientId, _docuSignJWT.ImpersonatedUserID,
+                var accessToken = AuthenticateWithJWT("Admin", _docuSignJWT.ClientId, _docuSignJWT.ImpersonatedUserID,
                                                              _docuSignJWT.AuthServer, _docuSignJWT.PrivateKeyFile);
                 var token = new Token()
                 {
                     Value = accessToken.access_token,
                     ExpiresIn = accessToken.expires_in
                 };
-
                 return token;
             }
             catch (ApiException apiExp)
@@ -141,12 +173,7 @@ namespace DocuSignPOC2.Services.IESignAdmin
                     else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                     {
                         Process.Start("open", url);
-                    }
-
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Unable to send envelope; Exiting. Please rerun the console app once consent was provided");
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Environment.Exit(-1);
+                    }                   
                 }
                 return null;
             }
@@ -254,7 +281,35 @@ namespace DocuSignPOC2.Services.IESignAdmin
                 "&redirect_uri=" + _config["DocuSign:AppUrl"] + "/ds/login?authType=JWT";
         }
 
+        public void RefreshDocuSignClientsAndApiWithToken(string token)
+        {
+            var userInfo = _docuSignClient.GetUserInfo(token);
+            var account = userInfo.Accounts.FirstOrDefault();
+            this.ESignAdminOrganizationId = account.Organization.OrganizationId;
+            
+            this.ESignAdminAccountId = account.AccountId;
+            this.ESignBaseUrl = account.BaseUri + "/restapi";
+            _docuSignClient.Configuration.DefaultHeader.Add("Authorization", "Bearer " + ESignAdminToken);
+            _eSignApiClient.Configuration.DefaultHeader.Add("Authorization", "Bearer " + ESignAdminToken);
+            _eSignApiClient.SetBasePath(ESignBaseUrl);           
+            _adminApiClient.SetBasePath(_docuSignJWT.AdminApiEndpoint);
+            _adminApiClient.Configuration.DefaultHeader.Add("Authorization", "Bearer " + ESignAdminToken);
+        }
 
-      
+        public Guid? GetOrganizationId()
+        {
+            Guid? organizationId = null;            
+           
+            var org = AdminAccountsApi.GetOrganizations().Organizations;
+            if (org == null)
+            {
+                throw new DocuSign.Admin.Client.ApiException(0, "You must create an organization for this account to be able to use the DocuSign Admin API.");
+            }
+            else
+            {
+                organizationId = org.FirstOrDefault().Id;
+            }
+            return organizationId;
+        }
     }
 }

@@ -5,29 +5,26 @@ namespace DocuSignPOC2.Services.IUser
 {
     public interface IUserService
     {
-        public NewUsersSummary CreateNewUser(string accessToken,
-            string basePath,
-            string accountId,
-            Guid? organizationId,
+        public NewUsersSummary CreateNewUser(
             string firstName,
             string lastName,
             string userName,
             string email,
-            long permissionProfileId,
-            long groupId);
+            long permissionProfileId
+            );
 
         public (PermissionProfileInformation, GroupInformation) GetPermissionProfilesAndGroups(
-           string accessToken, string basePath, string accountId);
+          );
 
         public NewUserRequest ConstructNewUserRequest(
             long permissionProfileId,
             long groupId,
-            Guid accountId,
             string email,
             string firstName,
             string lastName,
             string userName);
 
-        public Guid? GetOrganizationId(string adminApiBasePath, string accessToken);       
+        public UsersDrilldownResponse GetUserByEmail(string email);
     }
 }
+

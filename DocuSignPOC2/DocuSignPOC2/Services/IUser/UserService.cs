@@ -3,7 +3,6 @@ using DocuSign.Admin.Model;
 using DocuSign.Constants;
 using DocuSign.eSign.Api;
 using DocuSign.eSign.Model;
-using DocuSignPOC2.Services.IDocuSignClient;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -18,19 +17,14 @@ namespace DocuSignPOC2.Services.IUser
     public class UserService : IUserService
     {
         private readonly IConfiguration _config;
-        private readonly IeSignAdminService _iESignAdminService;
-        private readonly ApiClient _apiClient;
-        private readonly string _eSignAccoutId;
-        private readonly string _eSignGroupId;
+        private readonly DocuSignJWT _docuSignJWT;
+        private readonly IeSignAdminService _iESignAdminService;     
 
         public UserService(IConfiguration config, IeSignAdminService iESignAdminService)
         {
             _config = config;
-            _iESignAdminService = iESignAdminService;
-            _apiClient = _iESignAdminService.ApiClient;
-            _eSignAccoutId = iESignAdminService.ESignAdminAccountId;
-
-
+            _docuSignJWT = _config.GetRequiredSection("DocuSignJWT").Get<DocuSignJWT>();
+            _iESignAdminService = iESignAdminService; 
         }
         /// <summary>
         /// Creates a new user
@@ -52,10 +46,11 @@ namespace DocuSignPOC2.Services.IUser
             string lastName,
             string userName,
             string email,
-            long permissionProfileId)
+            long permissionProfileId            
+            )
         {
 
-            var usersApi = new DocuSign.eSign.Api.UsersApi(_apiClient);
+            
             var newUsersDefinition = new NewUsersDefinition { NewUsers = new List<UserInformation>() };
             UserInformation user1 = new UserInformation
             {
@@ -71,7 +66,7 @@ namespace DocuSignPOC2.Services.IUser
             //UserInformation user2 = new UserInformation { Email = "sam@example.com", UserName = "Sam Two", Company = "XYZ", ActivationAccessCode = "123456" };
             newUsersDefinition.NewUsers.Add(user1);
             //newUsersDefinition.NewUsers.Add(user2);
-            NewUsersSummary newUsersSummary = usersApi.Create(_iESignAdminService.ESignAdminOrganizationId, newUsersDefinition);
+            NewUsersSummary newUsersSummary = _iESignAdminService.UsersApi.Create(_iESignAdminService.ESignAdminOrganizationId, newUsersDefinition);
             return newUsersSummary;
         }
 
@@ -84,14 +79,18 @@ namespace DocuSignPOC2.Services.IUser
         /// <param name="accountId">The DocuSign Account ID (GUID or short version) for which the APIs call would be made</param>
         /// <returns>The tuple with DocuSign permission profiles and groups information</returns>
         public (PermissionProfileInformation, GroupInformation) GetPermissionProfilesAndGroups()
-        {
-            var accountsApi = new DocuSign.eSign.Api.AccountsApi(_apiClient);
-            var permissionProfiles = accountsApi.ListPermissions(_eSignAccoutId);
+        {            
+            var permissionProfiles = _iESignAdminService.AccountsApi.ListPermissions(_iESignAdminService.ESignAdminAccountId);
 
-            var dsGroupsApi = new GroupsApi(_apiClient);
-            var groups = dsGroupsApi.ListGroups(_eSignAccoutId);
+            
+            var groups = _iESignAdminService.GroupsApi.ListGroups(_iESignAdminService.ESignAdminAccountId);
 
             return (permissionProfiles, groups);
+        }
+
+        public GroupInformation GetGroups()
+        {
+            return _iESignAdminService.GroupsApi.ListGroups(_iESignAdminService.ESignAdminAccountId);           
         }
 
         /// <summary>
@@ -124,7 +123,7 @@ namespace DocuSignPOC2.Services.IUser
                 {
                     new NewUserRequestAccountProperties
                     {
-                        Id = new Guid(_eSignAccoutId),
+                        Id = new Guid(_iESignAdminService.ESignAdminAccountId),
                         PermissionProfile = new PermissionProfileRequest
                         {
                             Id = permissionProfileId,
@@ -143,5 +142,18 @@ namespace DocuSignPOC2.Services.IUser
                 // Step 3 end
             };
         }
+
+        public UsersDrilldownResponse GetUserByEmail(string email)
+        {    
+            var retrieveUserOptions = new DocuSign.Admin.Api.UsersApi.GetUserDSProfilesByEmailOptions
+            {
+                email = email,
+            };
+          
+            UsersDrilldownResponse userWithSearchedEmail = _iESignAdminService.AdminUsersApi.GetUserDSProfilesByEmail(new Guid(_iESignAdminService.ESignAdminOrganizationId), retrieveUserOptions);
+
+            // Step 3 end
+            return userWithSearchedEmail;
+        }       
     }
 }

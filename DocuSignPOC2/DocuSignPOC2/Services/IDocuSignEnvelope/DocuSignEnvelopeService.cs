@@ -1,11 +1,18 @@
 ﻿using DocuSign.eSign.Api;
 using DocuSign.eSign.Client;
 using DocuSign.eSign.Model;
+using DocuSignPOC2.Services.IESignAdmin;
 
 namespace DocuSignPOC2.Services.IDocuSignEnvelope
 {
-    public class DocuSignEnvelopeService:IDocuSignEnvelopeService
+    public class DocuSignEnvelopeService : IDocuSignEnvelopeService
     {
+        private readonly IeSignAdminService _ieSignAdminService;
+
+        public DocuSignEnvelopeService(IeSignAdminService ieSignAdminService)
+        {
+            this._ieSignAdminService = ieSignAdminService;
+        }
         /// <summary>
         /// Unpauses signature workflow
         /// </summary>
@@ -19,13 +26,10 @@ namespace DocuSignPOC2.Services.IDocuSignEnvelope
         /// <param name="recipient2Email">The second conditional signer email</param>
         /// <param name="recipient2Name">The second conditional signer name</param>
         /// <returns>The update summary of the envelopes</returns>
-        public  EnvelopeSummary SendEnvelope(string accessToken, string basePath, string accountId, string recipient1Email, string recipient1Name,
-             string recipient2Email, string recipient2Name,
-            string documentBase64)
-        {
-            // Construct your API headers
-            var docuSignClient = new DocuSignClient(basePath);
-            docuSignClient.Configuration.DefaultHeader.Add("Authorization", "Bearer " + accessToken);
+        public EnvelopeSummary SendEnvelope(string recipient1Email, string recipient1Name,
+             string recipient2Email, string recipient2Name, string documentBase64)
+        {          
+            
 
             // Construct request body
             var envelope = MakeEnvelope(
@@ -36,12 +40,12 @@ namespace DocuSignPOC2.Services.IDocuSignEnvelope
                 documentBase64);
 
             // Call the eSignature REST API
-            EnvelopesApi envelopesApi = new EnvelopesApi(docuSignClient);
+            
 
-            return envelopesApi.CreateEnvelope(accountId, envelope);
+            return _ieSignAdminService.EnvelopesApi.CreateEnvelope(_ieSignAdminService.ESignAdminAccountId, envelope);
         }
 
-        public  EnvelopeDefinition MakeEnvelope(string recipient1Email, string recipient1Name, string recipient2Email, string recipient2Name,
+        public EnvelopeDefinition MakeEnvelope(string recipient1Email, string recipient1Name, string recipient2Email, string recipient2Name,
             string documentBase64)
         {
             var document = new Document()
@@ -118,21 +122,19 @@ namespace DocuSignPOC2.Services.IDocuSignEnvelope
             return envelopeDefinition;
         }
 
-        public  EnvelopeAttachmentsResult GetEnvlopes(string accessToken, string basePath, string accountId, string? envelopeId)
-        {
-            var docuSignClient = new DocuSignClient(basePath);
-            docuSignClient.Configuration.DefaultHeader.Add("Authorization", "Bearer " + accessToken);
+        public EnvelopeAttachmentsResult GetEnvlopes(string? envelopeId)
+        {           
 
             // Call the eSignature REST API
-            EnvelopesApi envelopesApi = new EnvelopesApi(docuSignClient);
-            var attachments = envelopesApi.GetAttachments(accountId, envelopeId);
-            var documentsResult = envelopesApi.ListDocuments(accountId, envelopeId);
+            
+            var attachments =_ieSignAdminService.EnvelopesApi.GetAttachments(_ieSignAdminService.ESignAdminAccountId, envelopeId);
+            var documentsResult = _ieSignAdminService.EnvelopesApi.ListDocuments(_ieSignAdminService.ESignAdminAccountId, envelopeId);
             foreach (var item in documentsResult.EnvelopeDocuments)
             {
 
                 using (MemoryStream data = new MemoryStream())
                 {
-                    var document = envelopesApi.GetDocument(accountId, envelopeId, item.DocumentId);
+                    var document = _ieSignAdminService.EnvelopesApi.GetDocument(_ieSignAdminService.ESignAdminAccountId, envelopeId, item.DocumentId);
                     document.CopyTo(data);
                     var documentAsByteArray = data.ToArray();
                     var documentBase64 = Convert.ToBase64String(documentAsByteArray);
@@ -144,4 +146,4 @@ namespace DocuSignPOC2.Services.IDocuSignEnvelope
         }
     }
 }
-}
+

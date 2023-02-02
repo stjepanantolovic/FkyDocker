@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docu-sign-poc2-deployment
+spec:
+  selector:
+    matchLabels:
+      app: docu-sign-poc2-pod
+  template:
+    metadata:
+      labels:
+        app: docu-sign-poc2-pod
+    spec:
+      containers:
+      - name: docusignpoc2-container
+        image: docusignpoc2:latest
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 80

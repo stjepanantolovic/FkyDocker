@@ -1,5 +1,6 @@
 ﻿using DocuSign.Admin.Model;
 using DocuSign.eSign.Model;
+using DocuSignPOC2.Models;
 
 namespace DocuSignPOC2.Services.IUser
 {
@@ -25,6 +26,7 @@ namespace DocuSignPOC2.Services.IUser
             string userName);
 
         public UsersDrilldownResponse GetUserByEmail(string email);
+        public Party? AddPartyToDatabase(Party request);
     }
 }
 

@@ -1,12 +1,43 @@
-# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP .NET Core service.
-
 version: '3.4'
 
 services:
-  docusignpoc2:
-    image: docusignpoc2
-    build:
-      context: .
-      dockerfile: DocuSignPOC2/DocuSignPOC2/Dockerfile
-    ports:
-      - 5250:5250
+
+    docusignpoc2:
+      image: docusignpoc2
+      build:
+        context: .
+        dockerfile: DocuSignPOC2/DocuSignPOC2/Dockerfile
+      ports:
+        - 5250:5250
+
+    postgresql_database:
+      image: postgres:latest
+      environment:
+        - POSTGRES_USER=admin
+        - POSTGRES_PASSWORD=adminadmin
+        - POSTGRES_DB=SampleDatabase
+      ports:
+        - 5435:5432
+      expose:
+        - "5435"
+      restart: unless-stopped
+      volumes:
+        - database-data:/var/lib/postgresql/data/
+
+    pgadmin:
+      image: dpage/pgadmin4     
+      environment:
+          - PGADMIN_DEFAULT_EMAIL=pgadmin4@pgadmin.org
+          - PGADMIN_DEFAULT_PASSWORD=admin
+      ports: 
+          - "5050:80"
+      restart: unless-stopped
+      volumes: 
+              - pgadmin:/root/.pgadmin
+
+
+
+volumes:
+    database-data:
+    pgadmin:
+

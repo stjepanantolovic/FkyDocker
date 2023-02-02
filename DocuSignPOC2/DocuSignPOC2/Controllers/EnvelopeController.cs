@@ -32,6 +32,8 @@ namespace DocuSignPOC2.Controllers
         [HttpPost("SendEnvelope")]
         public IActionResult SendEnvelope(AgentProducerEnvelope request)
         {
+            _userService.AddPartyToDatabase(request.Agent);
+            _userService.AddPartyToDatabase(request.Producer);
             var user = _userService.GetUserByEmail(request.Producer.Email);
             return Ok(_docuSignEnvelopeService.SendEnvelope(
                 request.Agent.Email,

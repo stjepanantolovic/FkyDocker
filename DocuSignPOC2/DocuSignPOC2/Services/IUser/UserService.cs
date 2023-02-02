@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DocuSign.eSign.Client;
 using DocuSignPOC2.Services.IESignAdmin;
+using DocuSignPOC2.Models;
 
 namespace DocuSignPOC2.Services.IUser
 {
@@ -18,13 +19,15 @@ namespace DocuSignPOC2.Services.IUser
     {
         private readonly IConfiguration _config;
         private readonly DocuSignJWT _docuSignJWT;
-        private readonly IeSignAdminService _iESignAdminService;     
+        private readonly IeSignAdminService _iESignAdminService;
+        private readonly DataContext _dataContext;
 
-        public UserService(IConfiguration config, IeSignAdminService iESignAdminService)
+        public UserService(IConfiguration config, IeSignAdminService iESignAdminService, DataContext dataContext)
         {
             _config = config;
             _docuSignJWT = _config.GetRequiredSection("DocuSignJWT").Get<DocuSignJWT>();
-            _iESignAdminService = iESignAdminService; 
+            _iESignAdminService = iESignAdminService;
+            _dataContext = dataContext;
         }
         /// <summary>
         /// Creates a new user
@@ -155,5 +158,23 @@ namespace DocuSignPOC2.Services.IUser
             // Step 3 end
             return userWithSearchedEmail;
         }       
+
+        public Party? AddPartyToDatabase(Party request)
+        {
+            if (PartyExists(request.Email))
+            {
+                return null;
+            }
+            _dataContext.Database.BeginTransaction();
+            _dataContext.Parties.Add(request);
+            _dataContext.SaveChanges();
+            _dataContext.Database.CommitTransaction();
+            return request;
+        }
+
+        public bool PartyExists(string email)
+        {
+            return _dataContext.Parties.Any(p=>p.Email.ToLower()==email.ToLower());
+        }
     }
 }

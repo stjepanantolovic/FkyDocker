@@ -28,6 +28,6 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./docker-compose.yml
+          file: ./DocuSignPOC2/DocuSignPOC2/Dockerfile
           push: true
           tags: stjepanantolovic/clockbox:latest

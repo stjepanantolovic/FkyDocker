@@ -28,6 +28,6 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./Dockerfile
+          file: ./docker-compose.yml
           push: true
           tags: stjepanantolovic/clockbox:latest

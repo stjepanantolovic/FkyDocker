@@ -3,7 +3,7 @@ version: '3.4'
 services:
 
     docusignpoc2:
-      image: docusignpoc2
+      image: stjepanantolovic/docusignpoc2
       build:
         context: .
         dockerfile: DocuSignPOC2/DocuSignPOC2/Dockerfile

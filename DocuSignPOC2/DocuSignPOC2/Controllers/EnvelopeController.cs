@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace DocuSignPOC2.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class EnvelopeController : ControllerBase
     {
 
@@ -34,7 +34,7 @@ namespace DocuSignPOC2.Controllers
         {
             _userService.AddPartyToDatabase(request.Agent);
             _userService.AddPartyToDatabase(request.Producer);
-            var user = _userService.GetUserByEmail(request.Producer.Email);
+            //var user = _userService.GetUserByEmail(request.Producer.Email);
             return Ok(_docuSignEnvelopeService.SendEnvelope(
                 request.Agent.Email,
                 $"{request.Agent.FirstName} {request.Agent.LastName}",

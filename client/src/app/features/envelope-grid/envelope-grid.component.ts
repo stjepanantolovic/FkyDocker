@@ -20,8 +20,10 @@ export class EnvelopeGridComponent implements OnInit {
   }
 
   public columnDefs: ColDef[] = [
-    { headerName: "Row",
-    valueGetter: "node.rowIndex + 1", width:10},
+    {
+      headerName: "Row",
+      valueGetter: "node.rowIndex + 1", width: 10
+    },
     { field: 'id', headerName: 'ID' },
     { field: 'docuSignId', headerName: 'DocuSignId' },
     { field: 'agentSignTimeStamp', headerName: 'Agent Signature TimeStamp' },
@@ -34,13 +36,13 @@ export class EnvelopeGridComponent implements OnInit {
     filter: true,
   };
 
-subscribeToEnvelopeSave(){
-  this.envelopeService.envelopeSentEmitter.subscribe(response=>{
-    console.log('event emitter received', response);
-    this.rowData$ = this.envelopeService.getEnvelopes() as Observable<any[]>;
-    this.agGrid.api.sizeColumnsToFit();
-  })
-}
+  subscribeToEnvelopeSave() {
+    this.envelopeService.envelopeSentEmitter.subscribe(response => {
+      console.log('event emitter received', response);
+      this.rowData$ = this.envelopeService.getEnvelopes() as Observable<any[]>;
+      this.agGrid.api.sizeColumnsToFit();
+    })
+  }
 
 
 

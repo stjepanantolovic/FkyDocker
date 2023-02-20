@@ -53,6 +53,7 @@ builder.Services.AddScoped<IESignAdminService, ESignAdminService>();
 builder.Services.AddScoped<IDocuSignService, DocuSignService>();
 builder.Services.AddScoped<IPocService, PocService>();
 builder.Services.AddCors();
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 

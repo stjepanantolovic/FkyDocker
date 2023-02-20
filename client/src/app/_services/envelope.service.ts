@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -10,6 +10,7 @@ import { EnvelopSigners as EnvelopeSigners } from '../models/envelope-signers';
   providedIn: 'root'
 })
 export class EnvelopeService {
+  envelopeSentEmitter : EventEmitter<boolean> = new EventEmitter();
   baseUrl = environment.appiUrl + 'envelope/';
   constructor(private http: HttpClient) { }
 
@@ -18,17 +19,22 @@ export class EnvelopeService {
     var agentProducerEnvelope = new AgentProducerEnvelope(request);
     console.log('sendEnvelope Service agentProducerEnvelope', agentProducerEnvelope);
     this.http.post(this.baseUrl + 'sendEnvelope/', agentProducerEnvelope)
-    .subscribe((response: any) => {
-          console.log('SendEnvelope response', response);
-        });   
-    
+      .subscribe((response: any) => {
+        console.log('SendEnvelope response', response);
+        this.envelopeSentEmitter.emit(true);
+      });
+
   }
 
-  testDocuSigWebHook(webHook:any){
+  testDocuSigWebHook(webHook: any) {
     this.http.post(this.baseUrl + 'DocuSigWebHook/', webHook)
-    .subscribe((response: any) => {
-          console.log('SendEnvelope response', response);
-        });
+      .subscribe((response: any) => {
+        console.log('SendEnvelope response', response);
+      });
+  }
+
+  getEnvelopes() {
+    return this.http.get(this.baseUrl + 'getAll')
   }
 }
 

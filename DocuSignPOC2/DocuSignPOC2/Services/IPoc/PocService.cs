@@ -53,5 +53,11 @@ namespace DocuSignPOC2.Services.IPoc
             _dataContext.Database.CommitTransaction();
             return envelope;
         }
+
+        public List<Envelope> GetAllEnvelopes()
+        {
+            return _dataContext.Envleopes.ToList();
+           
+        }
     }
 }

@@ -1,2 +1,17 @@
-<p>envelope-grid works!</p>
-<h1>Test</h1>
+
+<!-- Button to clear selection -->
+<button (click)="clearSelection()">Clear Selection</button>
+<!-- AG Grid Angular Component -->
+<ag-grid-angular #agGrid
+   style="width: 1200px; height: 650px"
+   class="ag-theme-alpine"
+   [columnDefs]="columnDefs"
+   [defaultColDef]="defaultColDef"
+   [rowData]="rowData$ | async"
+   [rowSelection]="'multiple'"
+   [animateRows]="true"
+   (gridReady)="onGridReady($event)"
+   (cellClicked)="onCellClicked($event)"
+   [pagination]="true"
+   
+ ></ag-grid-angular>

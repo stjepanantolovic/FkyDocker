@@ -11,12 +11,32 @@ namespace DocuSignPOC2.DocuSignHandling.Helpers
     public static class DocuSignEnvelopeHelper
     {
         public static EnvelopeDefinition MakeEnvelope(string emailSubject, string agentEmail, string agentName,
-            string producerEmail, string producerName, List<Document> docuSignDocuments, bool? useDefaultDocuments = true)
+            string producerEmail, string producerName, List<Document> docuSignDocuments, string notifcationUri, bool? useDefaultDocuments = true)
         {
 
             var envelopeDefinition = new EnvelopeDefinition()
             {
+                NotificationUri = notifcationUri,
+                Password = "test",
 
+
+                EventNotification = new EventNotification()
+                {
+                    DeliveryMode = "SIM",
+                    EventData = new ConnectEventData() { Version = "restv2.1" },
+                    Events = new List<string>()
+                   {
+
+                    "envelope-created",
+                    "envelope-sent",
+                    "envelope-delivered",
+                    "envelope-completed",
+                    "recipient-delivered",
+                    "recipient-completed",
+                    "recipient-sent",
+                    "template-modified"
+                   }
+                },
                 Documents = docuSignDocuments.PrepareDocumentsForSigning(),
                 //Documents = GetDefaultDocuments("Test"),
                 EmailSubject = emailSubject,

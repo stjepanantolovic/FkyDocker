@@ -10,6 +10,7 @@ import { HomeComponent } from './features/home/home.component';
 import { FormsModule,ReactiveFormsModule } from '@angular/forms';
 import { EnvelopeComponent } from './features/envelope/envelope.component';
 import { EnvelopeGridComponent } from './features/envelope-grid/envelope-grid.component';
+import { AgGridModule } from 'ag-grid-angular';
 
 
 @NgModule({
@@ -27,7 +28,8 @@ import { EnvelopeGridComponent } from './features/envelope-grid/envelope-grid.co
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    AgGridModule
   ],
   providers: [],
   bootstrap: [AppComponent]

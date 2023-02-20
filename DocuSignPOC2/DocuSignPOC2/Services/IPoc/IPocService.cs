@@ -8,6 +8,7 @@ namespace DocuSignPOC2.Services.IPoc
         public bool PartyExists(string email);
         public Guid AddWebHook(dynamic webHookRequest);
         public Envelope AddEnvelopeToDb(Envelope envelope);
+        public List<Envelope> GetAllEnvelopes();
 
     }
 }

@@ -26,7 +26,11 @@ namespace DocuSignPOC2.Controllers
             _pocService = pocService;
             _docuSignService = docuSignService;
         }
-
+        [HttpGet("GetAll")]
+        public IActionResult GetAll()
+        {           
+            return Ok(_pocService.GetAllEnvelopes());
+        }
 
 
         [HttpPost("DocuSigWebHook")]

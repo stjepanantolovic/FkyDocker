@@ -9,10 +9,11 @@ using System.Diagnostics;
 using DocuSign.eSign.Model;
 using static DocuSign.eSign.Client.Auth.OAuth.UserInfo;
 using DocuSign.eSign.Api;
+using System.Text;
 
-namespace DocuSignPOC2.Services.IESignAdmin
+namespace DocuSignPOC2.Services.IESignAdminCache
 {
-    public class ESignAdminService : IeSignAdminService
+    public class ESignAdminCacheService : IeSignAdminCacheService
     {
         private readonly IMemoryCache _cache;
         private readonly IConfiguration _config;
@@ -24,7 +25,7 @@ namespace DocuSignPOC2.Services.IESignAdmin
         private readonly DocuSign.Admin.Client.ApiClient _adminApiClient;
 
 
-        public ESignAdminService(IMemoryCache cache, IConfiguration config)
+        public ESignAdminCacheService(IMemoryCache cache, IConfiguration config)
         {
             _cache = cache;
             _config = config;
@@ -34,14 +35,14 @@ namespace DocuSignPOC2.Services.IESignAdmin
             _eSignApiClient = new ApiClient();
             _adminApiClient = new DocuSign.Admin.Client.ApiClient();
             FetchAdminToken();
-            
+
 
         }
         public DocuSign.Admin.Api.AccountsApi AdminAccountsApi
         {
             get { return new DocuSign.Admin.Api.AccountsApi(_adminApiClient); }
         }
-    
+
         public ApiClient ESignApiClient
         {
             get { return _eSignApiClient; }
@@ -173,7 +174,7 @@ namespace DocuSignPOC2.Services.IESignAdmin
                     else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                     {
                         Process.Start("open", url);
-                    }                   
+                    }
                 }
                 return null;
             }
@@ -189,45 +190,6 @@ namespace DocuSignPOC2.Services.IESignAdmin
                 {
                     "signature",
                     "impersonation",
-                };
-                if (apiType == ExamplesAPIType.Rooms)
-                {
-                    scopes.AddRange(new List<string>
-                {
-                    "dtr.rooms.read",
-                    "dtr.rooms.write",
-                    "dtr.documents.read",
-                    "dtr.documents.write",
-                    "dtr.profile.read",
-                    "dtr.profile.write",
-                    "dtr.company.read",
-                    "dtr.company.write",
-                    "room_forms",
-                });
-                }
-
-                if (apiType == ExamplesAPIType.Click)
-                {
-                    scopes.AddRange(new List<string>
-                {
-                    "click.manage",
-                    "click.send",
-                });
-                }
-
-                if (apiType == ExamplesAPIType.Monitor)
-                {
-                    scopes.AddRange(new List<string>
-                {
-                    "signature",
-                    "impersonation",
-                });
-                }
-
-                if (apiType == ExamplesAPIType.Admin)
-                {
-                    scopes.AddRange(new List<string>
-                {
                     "user_read",
                     "user_write",
                     "account_read",
@@ -235,15 +197,63 @@ namespace DocuSignPOC2.Services.IESignAdmin
                     "group_read",
                     "permission_read",
                     "identity_provider_read",
-                    "domain_read",
-            });
-                }
-                var privateKey = DSHelper.ReadFileContent(DSHelper.PrepareFullPrivateKeyFilePath(privateKeyFile));
+                    "domain_read"
+                };
+                //    if (apiType == ExamplesAPIType.Rooms)
+                //    {
+                //        scopes.AddRange(new List<string>
+                //    {
+                //        "dtr.rooms.read",
+                //        "dtr.rooms.write",
+                //        "dtr.documents.read",
+                //        "dtr.documents.write",
+                //        "dtr.profile.read",
+                //        "dtr.profile.write",
+                //        "dtr.company.read",
+                //        "dtr.company.write",
+                //        "room_forms",
+                //    });
+                //    }
+
+                //    if (apiType == ExamplesAPIType.Click)
+                //    {
+                //        scopes.AddRange(new List<string>
+                //    {
+                //        "click.manage",
+                //        "click.send",
+                //    });
+                //    }
+
+                //    if (apiType == ExamplesAPIType.Monitor)
+                //    {
+                //        scopes.AddRange(new List<string>
+                //    {
+                //        "signature",
+                //        "impersonation",
+                //    });
+                //    }
+
+                //    if (apiType == ExamplesAPIType.Admin)
+                //    {
+                //        scopes.AddRange(new List<string>
+                //    {
+                //        "user_read",
+                //        "user_write",
+                //        "account_read",
+                //        "organization_read",
+                //        "group_read",
+                //        "permission_read",
+                //        "identity_provider_read",
+                //        "domain_read",
+                //});
+                //}
+                var privateKey = DSAppHelper.ReadFileContent(DSAppHelper.PrepareFullPrivateKeyFilePath(privateKeyFile));
                 return docuSignClient.RequestJWTUserToken(
                     clientId,
                     impersonatedUserId,
                     authServer,
-                    DSHelper.ReadFileContent(DSHelper.PrepareFullPrivateKeyFilePath(privateKeyFile)),
+                    DSAppHelper.ReadFileContent(DSAppHelper.PrepareFullPrivateKeyFilePath(privateKeyFile)),
+                    //Encoding.Default.GetBytes("-----BEGIN RSA PRIVATE KEY-----\r\nMIIEowIBAAKCAQEApBv8T1PbliIksohyXHzvo6GIkhY320z7ci5vgfE85JS7vw4y\r\ncvqJTZrMRViW7W2aWg06MUu2FPXOsiciqcVjmuq3uZ9tNIQCue1TbrHoTvWlkIHk\r\nfI3kbgAs/a1IwkfXHg630cN7QgJGV6D6JBtxC+sWRwcoxRROKa8ej09dOczj1ZkW\r\nxNRHTDmA3SGJgK5sWE69uSN7oWx8nPZQfLnUc2NE9j6Ua8O5Vzov0kZpQPP4Bkp4\r\noD4cQ5H83QbGihWUs2QmVXgrcC4kmwyv4d6ls22Pfq2HEDsMu4CXIAn1N7goB3qN\r\nfwp9BwD7G+Ipjet89uXbv1oBXxvtPkj2SBkGaQIDAQABAoIBABbL42nimHl7vzTE\r\nsvwph8Fndjjy2KoAQNqM3EUE7YREK+tfjb7+kfWjh/YnFvoe1EbnmPqRjZbOSXri\r\naFSEfLBfpAtnO8yEfPt2XfVdxcs4INpYzNRHgqCMKjPH7zg7sgR1H3BGUxgpiDty\r\ne2TqIfM5ohPWSQHNbwkn0Bswt17Inyenl/Fi6PMyixRThZ0DnhhLwgF4vfwmSEsb\r\nxRCQrmvRzWXzsNomm2wBF6A3PgQBQDvVnl27PV47hOxDgIvMl7KoRPt00NkPlH3x\r\nSJAZhhJ1ANHABzCe1iDe2nJFEbPKAlnqyimTzx8TMyxFinM4j1SL2svugYpvbDXv\r\nrIpB3m0CgYEA+KZuNCgu3d/ePy5haam68N6i+js9mI4cfhbRqG/ze68qnRLHXbjt\r\nnYMCOGwvWeYgiPHih7KdcfbCC/sf09sugVs9rPPl6PjvmRMeTTfjBzIvk9h2HZfP\r\nvjzwW+wV3dHZQyhmWVssr7ejndhCQYAbrEw2Bccw1LnT3hMGR5KvMzUCgYEAqPXS\r\nwrIpi+yAMubsx/Sq8Wg5+TWJnI2F0WwRHz4KqIeWc7CtjfltKzb0nyfdFWEwCpUc\r\nEvGlVJVLoz+Z3JCu+camXHswA0wL64ak25Wg3sRrWrW1PrH819lfD6JW1iflCMwQ\r\nzlAy5wWx0QzauIfE5yrBZr7g21n/W3Ey6FtuWOUCgYEAwzUOEb52RNQrTBjieyy4\r\nSb/P3XnCutDex5KsmHsDgVecseH7SLYVPfKLPLaaWg6T/k8/097DQqRB5VwKua06\r\njm2ONwjnt4YvvFJJGMBGaPDab0yiNktn2edHoDLxW8sSsWm3KHGu3Gjkd9g+8+Na\r\nVmMiili+GlOlZJQ0+t3K0/0CgYB2XtJraJpG10fxYWtdowHn4tdKysFAFr47u/Q6\r\n6SJac7NqFcthfe+HqRa0Mh9njRE1OMXUV8s2eOnm0vYeWpbbktqWTA+VH7/yIAB7\r\nflaX+xAjGs6Bv/yd1EIPF/KyUnzZLu5PPEyNIaY0CUdqpGPEeGXKb8vkoSaPj7zU\r\noMmsKQKBgF1bY8mveOf9O55uvw+v78UVi82GgHi/2O3WI0TJTVEeg8nh2i7qgoqh\r\nJi/u2J94FJrejweUT4wSgZmYDjvYbomsN2HoVIc5duGZFpJdLwL686CLK5R3VIdd\r\n03NBUZnra1Uxet3AxILXJpkkLf1zLZZQbo9TY3CvZSpS+D2LGY3G\r\n-----END RSA PRIVATE KEY-----"),
                     1,
                     scopes);
             }
@@ -260,46 +270,36 @@ namespace DocuSignPOC2.Services.IESignAdmin
         private string BuildConsentURL()
         {
             var scopes = "signature impersonation";
-            var apiType = Enum.Parse<ExamplesAPIType>(_config["ExamplesAPI"]);
-            if (apiType == ExamplesAPIType.Rooms)
-            {
-                scopes += " dtr.rooms.read dtr.rooms.write dtr.documents.read dtr.documents.write "
-                + "dtr.profile.read dtr.profile.write dtr.company.read dtr.company.write room_forms";
-            }
-            else if (apiType == ExamplesAPIType.Click)
-            {
-                scopes += " click.manage click.send";
-            }
-            else if (apiType == ExamplesAPIType.Admin)
-            {
-                scopes += " user_read user_write organization_read account_read group_read permission_read identity_provider_read domain_read";
-            }
 
-            return _config["DocuSign:AuthorizationEndpoint"] + "?response_type=code" +
+
+            scopes += " user_read user_write organization_read account_read group_read permission_read identity_provider_read domain_read";
+
+            scopes = scopes.Replace(" ", "%20");
+            return _config["DocuSignConfiguration:AuthorizationEndpoint"] + "?response_type=code" +
                 "&scope=" + scopes +
                 "&client_id=" + _config["DocuSignJWT:ClientId"] +
-                "&redirect_uri=" + _config["DocuSign:AppUrl"] + "/ds/login?authType=JWT";
+                "&redirect_uri=" + _config["DocuSignConfiguration:AppUrl"] + "/ds/login?authType=JWT";
         }
 
         public void RefreshDocuSignClientsAndApiWithToken(string token)
         {
             var userInfo = _docuSignClient.GetUserInfo(token);
             var account = userInfo.Accounts.FirstOrDefault();
-            this.ESignAdminOrganizationId = account.Organization.OrganizationId;
-            
+            //this.ESignAdminOrganizationId = account.Organization.OrganizationId;
+
             this.ESignAdminAccountId = account.AccountId;
             this.ESignBaseUrl = account.BaseUri + "/restapi";
             _docuSignClient.Configuration.DefaultHeader.Add("Authorization", "Bearer " + ESignAdminToken);
             _eSignApiClient.Configuration.DefaultHeader.Add("Authorization", "Bearer " + ESignAdminToken);
-            _eSignApiClient.SetBasePath(ESignBaseUrl);           
+            _eSignApiClient.SetBasePath(ESignBaseUrl);
             _adminApiClient.SetBasePath(_docuSignJWT.AdminApiEndpoint);
             _adminApiClient.Configuration.DefaultHeader.Add("Authorization", "Bearer " + ESignAdminToken);
         }
 
         public Guid? GetOrganizationId()
         {
-            Guid? organizationId = null;            
-           
+            Guid? organizationId = null;
+
             var org = AdminAccountsApi.GetOrganizations().Organizations;
             if (org == null)
             {

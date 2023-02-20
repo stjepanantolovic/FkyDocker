@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DocuSign.eSign.Client;
-using DocuSignPOC2.Services.IESignAdmin;
+using DocuSignPOC2.Services.IESignAdminCache;
 using DocuSignPOC2.Models;
 
 namespace DocuSignPOC2.Services.IUser
@@ -19,10 +19,10 @@ namespace DocuSignPOC2.Services.IUser
     {
         private readonly IConfiguration _config;
         private readonly DocuSignJWT _docuSignJWT;
-        private readonly IeSignAdminService _iESignAdminService;
+        private readonly IeSignAdminCacheService _iESignAdminService;
         private readonly DataContext _dataContext;
 
-        public UserService(IConfiguration config, IeSignAdminService iESignAdminService, DataContext dataContext)
+        public UserService(IConfiguration config, IeSignAdminCacheService iESignAdminService, DataContext dataContext)
         {
             _config = config;
             _docuSignJWT = _config.GetRequiredSection("DocuSignJWT").Get<DocuSignJWT>();

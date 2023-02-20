@@ -1,6 +1,11 @@
-<form [formGroup]="envelopeForm" (ngSubmit)="sendEnvelope()">
+
+<form class="col-6" [formGroup]="envelopeForm" (ngSubmit)="sendEnvelope()">
     <h2 class="text-center text-primary">Envelope</h2>
     <hr />
+    <div class="form-group">
+        <input type="checkbox" class="form-check-input" formControlName="defaultValues" placeholder="Default Email and Names" (change)="onDefault($event)"/>
+        <label class="form-label ml-3" for="defaultValues">Use default values</label>
+    </div>
     <div class="form-group">
         <input type="text" class="form-control" formControlName="agentName" placeholder="Agent Name" />
     </div>
@@ -16,8 +21,6 @@
     <div class="text-center">
         <input class="form-control" formControlName="documentBase64" type="file" 
                 (change)="onUpload($event)">
-      
-        
     </div>
 
     <div class="form-group text-center mt-2">

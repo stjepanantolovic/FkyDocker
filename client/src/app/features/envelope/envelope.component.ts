@@ -13,6 +13,7 @@ export class EnvelopeComponent implements OnInit {
   envelopeForm: FormGroup = new FormGroup({});
   model: EnvelopeSigners | any;
   base64String = "";
+  defaultValuesChecked=false;
   constructor(private evelopeService: EnvelopeService) { }
 
   ngOnInit(): void {
@@ -25,17 +26,14 @@ export class EnvelopeComponent implements OnInit {
       agentEmail: new FormControl(),
       producerName: new FormControl(),
       producerEmail: new FormControl(),
+      defaultValues: new FormControl(),
       documentBase64: new FormControl()
     }
     )
   }
 
   sendEnvelope() {
-    this.model = Object.assign({}, this.envelopeForm.value) as EnvelopeSigners;
-    this.model.agentName= "Phil Jackson";
-    this.model.agentEmail= "Proag.livestock@gmail.com";
-    this.model.producerName="Scottie Pippen";
-    this.model.producerEmail="proaglivestock2@gmail.com";
+    this.model = Object.assign({}, this.envelopeForm.value) as EnvelopeSigners;   
     this.model.DocumentBase64 = this.base64String;
     console.log(this.model);
     this.evelopeService.sendEnvelope(this.model);
@@ -53,9 +51,39 @@ export class EnvelopeComponent implements OnInit {
     reader.onload = () => {
       console.log(reader.result);
       this.base64String = reader.result as string;
-  };
-    
+      console.log('split', this.base64String.split('base64,'));
+      this.base64String = this.base64String.split('base64,')[1];
+      
+  }; 
     
   }
 
+  onDefault($event:any){    
+    var defaultValuesChecked =this.envelopeForm.controls['defaultValues'].value;    
+    if(defaultValuesChecked){
+      this.setFormDefaultValues();
+      this.defaultValuesChecked=defaultValuesChecked;
+    }
+    else{
+      if(this.defaultValuesChecked!=defaultValuesChecked){
+        this.envelopeForm.reset();
+        this.defaultValuesChecked=defaultValuesChecked;
+      }
+    }
+  }
+
+
+  setFormDefaultValues(){
+    this.envelopeForm.controls['agentName'].setValue('Phil Jackson');
+    this.envelopeForm.controls['agentEmail'].setValue('proag.livestock@gmail.com');
+    this.envelopeForm.controls['producerName'].setValue('Scottie Pippen');
+    this.envelopeForm.controls['producerEmail'].setValue('proaglivestock2@gmail.com');
+  }
+
+ 
+
 }
+
+
+
+

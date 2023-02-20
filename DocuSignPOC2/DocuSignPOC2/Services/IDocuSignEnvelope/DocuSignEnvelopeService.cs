@@ -1,15 +1,15 @@
 ﻿using DocuSign.eSign.Api;
 using DocuSign.eSign.Client;
 using DocuSign.eSign.Model;
-using DocuSignPOC2.Services.IESignAdmin;
+using DocuSignPOC2.Services.IESignAdminCache;
 
 namespace DocuSignPOC2.Services.IDocuSignEnvelope
 {
     public class DocuSignEnvelopeService : IDocuSignEnvelopeService
     {
-        private readonly IeSignAdminService _ieSignAdminService;
+        private readonly IeSignAdminCacheService _ieSignAdminService;
 
-        public DocuSignEnvelopeService(IeSignAdminService ieSignAdminService)
+        public DocuSignEnvelopeService(IeSignAdminCacheService ieSignAdminService)
         {
             this._ieSignAdminService = ieSignAdminService;
         }

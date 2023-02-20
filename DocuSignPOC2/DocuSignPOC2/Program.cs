@@ -1,7 +1,8 @@
 
 using DocuSignPOC2;
+using DocuSignPOC2.DocuSignHandling.Services;
 using DocuSignPOC2.Services.IDocuSignEnvelope;
-using DocuSignPOC2.Services.IESignAdmin;
+using DocuSignPOC2.Services.IESignAdminCache;
 using DocuSignPOC2.Services.IUser;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -31,14 +32,16 @@ builder.Host.UseSerilog((context, config) =>
 
 
 builder.Services.AddMemoryCache();
-builder.Services.AddSingleton<IeSignAdminService, ESignAdminService>();
+builder.Services.AddSingleton<IeSignAdminCacheService, ESignAdminCacheService>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IDocuSignEnvelopeService, DocuSignEnvelopeService>();
-builder.Services.AddScoped<IeSignAdminService, ESignAdminService>();
+builder.Services.AddScoped<IeSignAdminCacheService, ESignAdminCacheService>();
+builder.Services.AddScoped<IESignAdminService, ESignAdminService>();
+builder.Services.AddScoped<IDocuSignService, DocuSignService>();
 builder.Services.AddCors();
 
 var app = builder.Build();

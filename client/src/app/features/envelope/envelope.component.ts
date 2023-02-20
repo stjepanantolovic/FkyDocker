@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { AgentProducerEnvelope } from 'src/app/models/agent-producer-envelope';
 import { EnvelopSigners as EnvelopeSigners } from 'src/app/models/envelope-signers';
 import { EnvelopeService } from 'src/app/_services/envelope.service';
 
@@ -33,25 +32,23 @@ export class EnvelopeComponent implements OnInit {
   }
 
   sendEnvelope() {
-    this.model = Object.assign({}, this.envelopeForm.value) as EnvelopeSigners;   
+    this.model = Object.assign({}, this.envelopeForm.value) as EnvelopeSigners;  
+    this.model.documentBase64 = undefined;
+    this.model.defaultValues = undefined;
+    this.evelopeService.testDocuSigWebHook(this.model);
     this.model.DocumentBase64 = this.base64String;
-    console.log(this.model);
     this.evelopeService.sendEnvelope(this.model);
   }
 
-  onUpload(event: any) {
-    console.log('file event', event);
+  onUpload(event: any) {   
     var reader = new FileReader();
-    var file = event.target.files[0];
-    console.log('file', file);
+    var file = event.target.files[0];   
     reader.readAsDataURL(file);
-    console.log('reader', reader);
-    console.log('reader.result', reader.result);
+  
     
     reader.onload = () => {
       console.log(reader.result);
       this.base64String = reader.result as string;
-      console.log('split', this.base64String.split('base64,'));
       this.base64String = this.base64String.split('base64,')[1];
       
   }; 

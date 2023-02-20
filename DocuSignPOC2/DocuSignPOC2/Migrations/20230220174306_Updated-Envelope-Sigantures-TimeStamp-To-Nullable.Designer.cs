@@ -3,6 +3,7 @@ using System;
 using DocuSignPOC2;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DocuSignPOC2.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230220174306_Updated-Envelope-Sigantures-TimeStamp-To-Nullable")]
+    partial class UpdatedEnvelopeSiganturesTimeStampToNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -57,9 +60,6 @@ namespace DocuSignPOC2.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("EnvelopeCompletedTimeStamp")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("EnvelopeSentToDocuSignTimeStamp")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("ProducerSignTimeStamp")

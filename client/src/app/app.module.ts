@@ -9,6 +9,7 @@ import { NavComponent } from './nav/nav.component';
 import { HomeComponent } from './features/home/home.component';
 import { FormsModule,ReactiveFormsModule } from '@angular/forms';
 import { EnvelopeComponent } from './features/envelope/envelope.component';
+import { EnvelopeGridComponent } from './features/envelope-grid/envelope-grid.component';
 
 
 @NgModule({
@@ -17,7 +18,8 @@ import { EnvelopeComponent } from './features/envelope/envelope.component';
     NavComponent,
     NavComponent,
     HomeComponent,
-    EnvelopeComponent
+    EnvelopeComponent,
+    EnvelopeGridComponent
   ],
   imports: [
     BrowserAnimationsModule,

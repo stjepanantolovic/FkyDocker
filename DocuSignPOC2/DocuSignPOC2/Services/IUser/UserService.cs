@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using DocuSign.eSign.Client;
 using DocuSignPOC2.Services.IESignAdminCache;
 using DocuSignPOC2.Models;
+using Newtonsoft.Json;
 
 namespace DocuSignPOC2.Services.IUser
 {
@@ -19,14 +20,16 @@ namespace DocuSignPOC2.Services.IUser
     {
         private readonly IConfiguration _config;
         private readonly DocuSignJWT _docuSignJWT;
-        private readonly IeSignAdminCacheService _iESignAdminService;
+        //private readonly IeSignAdminCacheService _iESignAdminService;
         private readonly DataContext _dataContext;
 
-        public UserService(IConfiguration config, IeSignAdminCacheService iESignAdminService, DataContext dataContext)
+        public UserService(IConfiguration config, 
+            //IeSignAdminCacheService iESignAdminService, 
+            DataContext dataContext)
         {
             _config = config;
             _docuSignJWT = _config.GetRequiredSection("DocuSignJWT").Get<DocuSignJWT>();
-            _iESignAdminService = iESignAdminService;
+            //_iESignAdminService = iESignAdminService;
             _dataContext = dataContext;
         }
         /// <summary>
@@ -44,34 +47,34 @@ namespace DocuSignPOC2.Services.IUser
         /// <param name="groupId">The group ID that will be used for a new user</param>
         /// <returns>The response of creating a new user</returns>
 
-        public NewUsersSummary CreateNewUser(
-            string firstName,
-            string lastName,
-            string userName,
-            string email,
-            long permissionProfileId            
-            )
-        {
+        //public NewUsersSummary CreateNewUser(
+        //    string firstName,
+        //    string lastName,
+        //    string userName,
+        //    string email,
+        //    long permissionProfileId            
+        //    )
+        //{
 
             
-            var newUsersDefinition = new NewUsersDefinition { NewUsers = new List<UserInformation>() };
-            UserInformation user1 = new UserInformation
-            {
-                FirstName = firstName,
-                LastName = lastName,
-                PermissionProfileId = permissionProfileId.ToString(),
-                //DefaultAccountId =  accountId.ToString(),
-                //GroupList = new List<Group>() { new Group() { GroupId = groupId.ToString() } },
-                Email = email,
-                UserName = userName,
-                ActivationAccessCode = "123456"
-            };
-            //UserInformation user2 = new UserInformation { Email = "sam@example.com", UserName = "Sam Two", Company = "XYZ", ActivationAccessCode = "123456" };
-            newUsersDefinition.NewUsers.Add(user1);
-            //newUsersDefinition.NewUsers.Add(user2);
-            NewUsersSummary newUsersSummary = _iESignAdminService.UsersApi.Create(_iESignAdminService.ESignAdminOrganizationId, newUsersDefinition);
-            return newUsersSummary;
-        }
+        //    var newUsersDefinition = new NewUsersDefinition { NewUsers = new List<UserInformation>() };
+        //    UserInformation user1 = new UserInformation
+        //    {
+        //        FirstName = firstName,
+        //        LastName = lastName,
+        //        PermissionProfileId = permissionProfileId.ToString(),
+        //        //DefaultAccountId =  accountId.ToString(),
+        //        //GroupList = new List<Group>() { new Group() { GroupId = groupId.ToString() } },
+        //        Email = email,
+        //        UserName = userName,
+        //        ActivationAccessCode = "123456"
+        //    };
+        //    //UserInformation user2 = new UserInformation { Email = "sam@example.com", UserName = "Sam Two", Company = "XYZ", ActivationAccessCode = "123456" };
+        //    newUsersDefinition.NewUsers.Add(user1);
+        //    //newUsersDefinition.NewUsers.Add(user2);
+        //    NewUsersSummary newUsersSummary = _iESignAdminService.UsersApi.Create(_iESignAdminService.ESignAdminOrganizationId, newUsersDefinition);
+        //    return newUsersSummary;
+        //}
 
 
         /// <summary>
@@ -81,20 +84,20 @@ namespace DocuSignPOC2.Services.IUser
         /// <param name="basePath">BasePath for API calls (URI)</param>
         /// <param name="accountId">The DocuSign Account ID (GUID or short version) for which the APIs call would be made</param>
         /// <returns>The tuple with DocuSign permission profiles and groups information</returns>
-        public (PermissionProfileInformation, GroupInformation) GetPermissionProfilesAndGroups()
-        {            
-            var permissionProfiles = _iESignAdminService.AccountsApi.ListPermissions(_iESignAdminService.ESignAdminAccountId);
+        //public (PermissionProfileInformation, GroupInformation) GetPermissionProfilesAndGroups()
+        //{            
+        //    var permissionProfiles = _iESignAdminService.AccountsApi.ListPermissions(_iESignAdminService.ESignAdminAccountId);
 
             
-            var groups = _iESignAdminService.GroupsApi.ListGroups(_iESignAdminService.ESignAdminAccountId);
+        //    var groups = _iESignAdminService.GroupsApi.ListGroups(_iESignAdminService.ESignAdminAccountId);
 
-            return (permissionProfiles, groups);
-        }
+        //    return (permissionProfiles, groups);
+        //}
 
-        public GroupInformation GetGroups()
-        {
-            return _iESignAdminService.GroupsApi.ListGroups(_iESignAdminService.ESignAdminAccountId);           
-        }
+        //public GroupInformation GetGroups()
+        //{
+        //    return _iESignAdminService.GroupsApi.ListGroups(_iESignAdminService.ESignAdminAccountId);           
+        //}
 
         /// <summary>
         /// Constructs a request for creating a new user
@@ -107,74 +110,58 @@ namespace DocuSignPOC2.Services.IUser
         /// <param name="permissionProfileId">The permission profile ID that will be used for a new user</param>
         /// <param name="groupId">The group ID that will be used for a new user</param>
         /// <returns>The request for creating a new user</returns>
-        public NewUserRequest ConstructNewUserRequest(
-            long permissionProfileId,
-            long groupId,
-            string email,
-            string firstName,
-            string lastName,
-            string userName)
-        {
-            return new NewUserRequest
-            {
-                // Step 3 start
-                FirstName = firstName,
-                LastName = lastName,
-                UserName = userName,
-                Email = email,
-                Accounts = new List<NewUserRequestAccountProperties>
-                {
-                    new NewUserRequestAccountProperties
-                    {
-                        Id = new Guid(_iESignAdminService.ESignAdminAccountId),
-                        PermissionProfile = new PermissionProfileRequest
-                        {
-                            Id = permissionProfileId,
-                        },
-                        Groups = new List<GroupRequest>
-                        {
-                            new GroupRequest
-                            {
-                                Id = groupId,
-                            },
-                        },
-                    },
-                },
-                AutoActivateMemberships = true,
+        //public NewUserRequest ConstructNewUserRequest(
+        //    long permissionProfileId,
+        //    long groupId,
+        //    string email,
+        //    string firstName,
+        //    string lastName,
+        //    string userName)
+        //{
+        //    return new NewUserRequest
+        //    {
+        //        // Step 3 start
+        //        FirstName = firstName,
+        //        LastName = lastName,
+        //        UserName = userName,
+        //        Email = email,
+        //        Accounts = new List<NewUserRequestAccountProperties>
+        //        {
+        //            new NewUserRequestAccountProperties
+        //            {
+        //                Id = new Guid(_iESignAdminService.ESignAdminAccountId),
+        //                PermissionProfile = new PermissionProfileRequest
+        //                {
+        //                    Id = permissionProfileId,
+        //                },
+        //                Groups = new List<GroupRequest>
+        //                {
+        //                    new GroupRequest
+        //                    {
+        //                        Id = groupId,
+        //                    },
+        //                },
+        //            },
+        //        },
+        //        AutoActivateMemberships = true,
 
-                // Step 3 end
-            };
-        }
+        //        // Step 3 end
+        //    };
+        //}
 
-        public UsersDrilldownResponse GetUserByEmail(string email)
-        {    
-            var retrieveUserOptions = new DocuSign.Admin.Api.UsersApi.GetUserDSProfilesByEmailOptions
-            {
-                email = email,
-            };
+        //public UsersDrilldownResponse GetUserByEmail(string email)
+        //{    
+        //    var retrieveUserOptions = new DocuSign.Admin.Api.UsersApi.GetUserDSProfilesByEmailOptions
+        //    {
+        //        email = email,
+        //    };
           
-            UsersDrilldownResponse userWithSearchedEmail = _iESignAdminService.AdminUsersApi.GetUserDSProfilesByEmail(new Guid(_iESignAdminService.ESignAdminOrganizationId), retrieveUserOptions);
+        //    UsersDrilldownResponse userWithSearchedEmail = _iESignAdminService.AdminUsersApi.GetUserDSProfilesByEmail(new Guid(_iESignAdminService.ESignAdminOrganizationId), retrieveUserOptions);
 
-            // Step 3 end
-            return userWithSearchedEmail;
-        }       
+        //    // Step 3 end
+        //    return userWithSearchedEmail;
+        //}       
 
-        public Party? AddPartyToDatabase(Party request)
-        {
-            if (PartyExists(request.Email))
-            {
-                return null;
-            }
-            _dataContext.Database.BeginTransaction();
-            _dataContext.Parties.Add(request);
-            _dataContext.SaveChanges();
-            _dataContext.Database.CommitTransaction();
-            return request;
-        }
-
-        public bool PartyExists(string email)
-        {
-            return _dataContext.Parties.Any(p=>p.Email.ToLower()==email.ToLower());
-        }
+       
     }
 }

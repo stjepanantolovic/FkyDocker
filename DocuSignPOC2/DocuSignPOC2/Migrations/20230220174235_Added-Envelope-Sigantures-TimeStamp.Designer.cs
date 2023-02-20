@@ -3,6 +3,7 @@ using System;
 using DocuSignPOC2;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DocuSignPOC2.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230220174235_Added-Envelope-Sigantures-TimeStamp")]
+    partial class AddedEnvelopeSiganturesTimeStamp
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,19 +53,16 @@ namespace DocuSignPOC2.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("AgentSignTimeStamp")
+                    b.Property<DateTime>("AgentSignTimeStamp")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DocuSignId")
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("EnvelopeCompletedTimeStamp")
+                    b.Property<DateTime>("EnvelopeCompletedTimeStamp")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime?>("EnvelopeSentToDocuSignTimeStamp")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("ProducerSignTimeStamp")
+                    b.Property<DateTime>("ProducerSignTimeStamp")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");

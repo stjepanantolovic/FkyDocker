@@ -20,12 +20,15 @@ export class EnvelopeService {
     this.http.post(this.baseUrl + 'sendEnvelope/', agentProducerEnvelope)
     .subscribe((response: any) => {
           console.log('SendEnvelope response', response);
+        });   
+    
+  }
+
+  testDocuSigWebHook(webHook:any){
+    this.http.post(this.baseUrl + 'DocuSigWebHook/', webHook)
+    .subscribe((response: any) => {
+          console.log('SendEnvelope response', response);
         });
-    // .pipe(
-    //   map((response: any) => {
-    //     console.log('SendEnvelope response', response);
-    //   }
-    //   ))
   }
 }
 

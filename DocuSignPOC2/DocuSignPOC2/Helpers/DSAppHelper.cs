@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DocuSign
 {
-    internal class DSHelper
+    internal class DSAppHelper
     {
         internal static string PrepareFullPrivateKeyFilePath(string fileName)
         {

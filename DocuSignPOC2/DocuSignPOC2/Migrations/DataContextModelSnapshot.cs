@@ -41,7 +41,7 @@ namespace DocuSignPOC2.Migrations
 
                     b.HasIndex("EnvelopeId");
 
-                    b.ToTable("ESignDocument");
+                    b.ToTable("ESignDocuments");
                 });
 
             modelBuilder.Entity("DocuSignPOC2.Models.Envelope", b =>
@@ -50,8 +50,20 @@ namespace DocuSignPOC2.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime?>("AgentSignTimeStamp")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("DocuSignId")
                         .HasColumnType("text");
+
+                    b.Property<DateTime?>("EnvelopeCompletedTimeStamp")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("EnvelopeSentToDocuSignTimeStamp")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("ProducerSignTimeStamp")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -79,6 +91,24 @@ namespace DocuSignPOC2.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Parties");
+                });
+
+            modelBuilder.Entity("DocuSignPOC2.Models.WebHook", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Json")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("TimeStamp")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WebHooks");
                 });
 
             modelBuilder.Entity("EnvelopeParty", b =>

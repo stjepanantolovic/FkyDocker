@@ -1,9 +1,9 @@
 ﻿using DocuSign.eSign.Api;
 using DocuSign.eSign.Client;
 
-namespace DocuSignPOC2.Services.IESignAdmin
+namespace DocuSignPOC2.Services.IESignAdminCache
 {
-    public interface IeSignAdminService
+    public interface IeSignAdminCacheService
     {
         public string ESignAdminOrganizationId { get; }
         public string ESignAdminAccountId { get; }

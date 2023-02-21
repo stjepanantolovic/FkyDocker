@@ -18,12 +18,15 @@ namespace DocuSignPOC2
         }
         public DbSet<Party> Parties { get; set; }
         public DbSet<Envelope> Envleopes { get; set; }
+        public DbSet<WebHook> WebHooks { get; set; }
+        public DbSet<ESignDocument> ESignDocuments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Party>().HasKey(p => p.Id);
             modelBuilder.Entity<Envelope>().HasKey(p => p.Id);
             modelBuilder.Entity<ESignDocument>().HasKey(p => p.Id);
+            modelBuilder.Entity<WebHook>().HasKey(p => p.Id);
 
             modelBuilder.Entity<Envelope>()
                 .HasMany(e => e.Parties)

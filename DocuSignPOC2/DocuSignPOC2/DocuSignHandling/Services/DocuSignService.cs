@@ -25,7 +25,7 @@ namespace DocuSignPOC2.DocuSignHandling.Services
         public EnvelopeSummary SendEnvelope(string agentEmail, string agentName,
             string producerEmail, string producerName, List<Document> docuSignDocuments)
         {
-            var notificationUri = _httpContextAccessor.HttpContext.Request.Host + "/api/envelope/DocuSigWebHook/";
+            var notificationUri = "https://" + _httpContextAccessor.HttpContext.Request.Host + "/api/envelope/DocuSigWebHook/";
             var emailSubject = _config.GetValue<string>("DocuSignConfiguration:EmailSubject");
             var envelope = DocuSignEnvelopeHelper.MakeEnvelope(
                 emailSubject,
